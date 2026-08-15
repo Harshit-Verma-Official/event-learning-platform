@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+
+.env
+.env.*
+!.env.example
+
+.prisma/
+
+.DS_Store
+
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

@@ -1,0 +1,31 @@
+{
+  "name": "event-learning-platform",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:auth": "npm run dev --workspace=auth-service",
+    "dev:course": "npm run dev --workspace=course-service",
+    "lint": "eslint .",
+    "build": "npm run build --workspaces"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.11.0",
+    "jiti": "^2.7.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.67.0"
+  }
+}
