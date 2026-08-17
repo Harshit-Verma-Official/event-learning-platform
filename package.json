@@ -10,6 +10,8 @@
   "scripts": {
     "dev:auth": "npm run dev --workspace=auth-service",
     "dev:course": "npm run dev --workspace=course-service",
+    "studio:auth": "npm run db:studio --workspace=auth-service",
+    "studio:course": "npm run db:studio --workspace=course-service",
     "lint": "eslint .",
     "build": "npm run build --workspaces"
   },

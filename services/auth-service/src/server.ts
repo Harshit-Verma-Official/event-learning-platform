@@ -1,35 +1,25 @@
+import "dotenv/config";
+
 import { createLogger } from "@event-learning-platform/common";
-import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import express from "express";
 import pinoHttp from "pino-http";
-import { prisma } from "./lib/prisma";
-
-dotenv.config();
+import authRoutes from "./routes/auth.routes";
 
 const app = express();
 const logger = createLogger({ serviceName: "auth-service" });
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(pinoHttp({ logger }));
 
-app.get("/health", async (_req, res) => {
-  try {
-    await prisma.user.findMany().then((result) => {
-      res.json(result);
-    });
+app.use("/api/v1/auth", authRoutes);
 
-    // res.json({
-    //   service: "auth-service",
-    //   status: "ok",
-    //   database: "connected",
-    // });
-  } catch {
-    res.status(503).json({
-      service: "auth-service",
-      status: "error",
-      database: "disconnected",
-    });
-  }
+app.get("/health", async (_req, res) => {
+  res.json({
+    service: "auth-service",
+    status: "ok",
+  });
 });
 
 const PORT = process.env.PORT || 3001;

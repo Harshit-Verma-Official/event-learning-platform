@@ -1,10 +1,9 @@
+import "dotenv/config";
+
 import { createLogger } from "@event-learning-platform/common";
-import dotenv from "dotenv";
 import express from "express";
 import pinoHttp from "pino-http";
 import { prisma } from "./lib/prisma";
-
-dotenv.config();
 
 const app = express();
 const logger = createLogger({ serviceName: "course-service" });
