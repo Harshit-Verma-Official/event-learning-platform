@@ -2,9 +2,12 @@ import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 import {
+  forgotPassword,
   loginUser,
   refreshAccessToken,
   registerUser,
+  resetPassword,
+  updateUserRole,
 } from "../services/auth.service";
 
 const REFRESH_TOKEN_COOKIE_OPTIONS = {
@@ -69,4 +72,39 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   res.status(200).json({ user });
+};
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  await forgotPassword(email);
+
+  return res.status(200).json({
+    message:
+      "If the account exists with this email, a password reset link has been sent.",
+  });
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+  const { token, newPassword } = req.body;
+
+  await resetPassword(token, newPassword);
+
+  return res.status(200).json({
+    message: "Password has been reset successfully.",
+  });
+};
+
+export const updateRole = async (
+  req: Request<{ userId: string }>,
+  res: Response,
+) => {
+  const { userId } = req.params;
+  const { role } = req.body;
+
+  const user = await updateUserRole(userId, role);
+
+  return res.status(200).json({
+    user,
+  });
 };

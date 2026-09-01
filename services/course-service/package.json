@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:studio": "prisma studio",
+    "db:migrate": "prisma migrate dev && prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -14,19 +16,23 @@
   "type": "commonjs",
   "dependencies": {
     "@event-learning-platform/common": "*",
+    "@event-learning-platform/contracts": "*",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "kafkajs": "^2.2.4",
     "pg": "^8.23.0",
     "pino-http": "^11.0.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.21.0",
-    "prisma": "^7.9.1",
-    "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
+    "prisma": "^7.9.1"
   }
 }

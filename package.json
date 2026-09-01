@@ -10,6 +10,8 @@
   "scripts": {
     "dev:auth": "npm run dev --workspace=auth-service",
     "dev:course": "npm run dev --workspace=course-service",
+    "dev:notification": "npm run dev --workspace=notification-service",
+    "dev:analytics": "npm run dev --workspace=analytics-service",
     "studio:auth": "npm run db:studio --workspace=auth-service",
     "studio:course": "npm run db:studio --workspace=course-service",
     "lint": "eslint .",
@@ -29,5 +31,8 @@
     "tsx": "^4.23.12",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.67.0"
+  },
+  "dependencies": {
+    "zod": "^4.5.4"
   }
 }

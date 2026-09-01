@@ -12,11 +12,82 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model Course {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  price       Decimal
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  price        Decimal
+  status       CourseStatus @default(DRAFT)
+
+  instructorId String
+
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([instructorId])
+  @@index([status])
+}
+
+model Lesson {
+  id        String   @id @default(uuid())
+  title     String
+  content   String?
+  order     Int
+
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, order])
+  @@index([courseId])
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
+
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model ProcessedEvent {
+  eventId     String   @id
+  eventType   String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
+
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  eventType     String
+  aggregateId   String
+  payload       Json
+
+  status        String    @default("PENDING")
+  attempts      Int       @default(0)
+  processedAt   DateTime?
+  lastError     String?
+
+  createdAt     DateTime  @default(now())
+
+  @@index([status, createdAt])
+  @@index([aggregateId])
 }

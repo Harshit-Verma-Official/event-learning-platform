@@ -4,7 +4,6 @@ import { verifyAccessToken } from "../lib/jwt";
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
-    role: string;
   };
 }
 
@@ -34,7 +33,6 @@ export const authenticate = (
 
     req.user = {
       id: payload.sub,
-      role: payload.role,
     };
 
     next();

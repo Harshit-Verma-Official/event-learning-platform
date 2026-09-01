@@ -1,0 +1,17 @@
+{
+  "name": "Service Worker & Offline Demo",
+  "short_name": "SW Demo",
+  "description": "A minimal service worker demo showing offline support and caching.",
+  "start_url": "/sw-demo",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/sw-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
