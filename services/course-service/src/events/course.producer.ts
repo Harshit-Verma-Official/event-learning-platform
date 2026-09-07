@@ -1,5 +1,6 @@
 import { COURSE_EVENT_TYPES } from "@event-learning-platform/contracts";
 import type { Prisma } from "../generated/prisma/client";
+import { generateId } from "../utils/id";
 
 export const createCoursePurchasedEvent = async (
   tx: Prisma.TransactionClient,
@@ -7,7 +8,7 @@ export const createCoursePurchasedEvent = async (
   courseId: string,
   enrollmentId: string,
 ) => {
-  const eventId = crypto.randomUUID();
+  const eventId = generateId();
 
   await tx.outboxEvent.create({
     data: {

@@ -9,6 +9,7 @@ import {
   verifyRefreshToken,
 } from "../lib/jwt";
 import { prisma } from "../lib/prisma";
+import { generateId } from "../utils/id";
 import { comparePassword, hashPassword } from "../utils/password";
 import { generateRandomToken, hashToken } from "../utils/token";
 
@@ -44,7 +45,7 @@ export const registerUser = async ({
       },
     });
 
-    const eventId = crypto.randomUUID();
+    const eventId = generateId();
 
     await tx.outboxEvent.create({
       data: {

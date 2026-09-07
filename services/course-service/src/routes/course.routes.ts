@@ -41,7 +41,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticate,
-  authorize(USER_ROLES.ADMIN),
+  authorize(USER_ROLES.INSTRUCTOR, USER_ROLES.ADMIN),
   deleteCourseController,
 );
 

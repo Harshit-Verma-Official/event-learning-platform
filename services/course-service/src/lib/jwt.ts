@@ -11,3 +11,10 @@ export const verifyAccessToken = (token: string) => {
     algorithms: ["HS256"],
   }) as AccessTokenPayload;
 };
+
+export const generateAccessToken = (payload: AccessTokenPayload) => {
+  return jwt.sign(payload, ACCESS_SECRET, {
+    algorithm: "HS256",
+    expiresIn: "15m",
+  });
+};

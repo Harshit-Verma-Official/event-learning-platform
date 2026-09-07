@@ -5,7 +5,7 @@ import {
   markEventProcessed,
 } from "../services/event.service";
 
-const handleCoursePurchased = async (event: CoursePurchasedEvent) => {
+export const handleCoursePurchased = async (event: CoursePurchasedEvent) => {
   const processed = await isEventProcessed(event.eventId);
 
   if (processed) {

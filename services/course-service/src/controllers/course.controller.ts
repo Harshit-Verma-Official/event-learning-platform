@@ -91,10 +91,24 @@ export const updateCourseController = async (
 };
 
 export const deleteCourseController = async (
-  req: Request<{ id: string }>,
+  req: AuthenticatedRequest & Request<{ id: string }>,
   res: Response,
 ) => {
-  await deleteCourse(req.params.id);
+  if (!req.user) {
+    return res.status(401).json({
+      message: "Authentication required",
+    });
+  }
+
+  const role = req.user.role;
+
+  if (!role) {
+    return res.status(403).json({
+      message: "User role is not available",
+    });
+  }
+
+  await deleteCourse(req.user.id, role, req.params.id);
 
   res.status(204).send();
 };

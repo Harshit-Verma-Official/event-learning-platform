@@ -1,9 +1,12 @@
 import { USER_ROLES, type UserRole } from "@event-learning-platform/contracts";
-import { getCourseCacheKey } from "../cache/course.cache";
+import {
+  getCachedCourse,
+  invalidateCourseCache,
+  setCachedCourse,
+} from "../cache/course.cache";
 import type { CourseStatus } from "../generated/prisma/enums";
 import { logger } from "../lib/logger";
 import { prisma } from "../lib/prisma";
-import { redis } from "../lib/redis";
 
 interface CreateCourseInput {
   title: string;
@@ -62,9 +65,7 @@ export const getCourses = async (page = 1, limit = 20) => {
 };
 
 export const getCourseById = async (courseId: string) => {
-  const cacheKey = getCourseCacheKey(courseId);
-
-  const cachedCourse = await redis.get(cacheKey);
+  const cachedCourse = await getCachedCourse(courseId);
 
   if (cachedCourse) {
     logger.info("Course cache HIT");
@@ -84,7 +85,7 @@ export const getCourseById = async (courseId: string) => {
     return null;
   }
 
-  await redis.set(cacheKey, JSON.stringify(course), "EX", 60 * 5);
+  await setCachedCourse(courseId, course);
 
   return course;
 };
@@ -116,13 +117,17 @@ export const updateCourse = async (
     data,
   });
 
-  await redis.del(getCourseCacheKey(courseId));
+  await invalidateCourseCache(courseId);
 
   return updatedCourse;
 };
 
-export const deleteCourse = async (courseId: string) => {
-  const course = prisma.course.findUnique({
+export const deleteCourse = async (
+  userId: string,
+  role: UserRole,
+  courseId: string,
+) => {
+  const course = await prisma.course.findUnique({
     where: {
       id: courseId,
     },
@@ -132,13 +137,17 @@ export const deleteCourse = async (courseId: string) => {
     throw new Error("Course not found");
   }
 
+  if (role !== USER_ROLES.ADMIN && course.instructorId !== userId) {
+    throw new Error("Forbidden");
+  }
+
   const deletedCourse = await prisma.course.delete({
     where: {
       id: courseId,
     },
   });
 
-  await redis.del(getCourseCacheKey(courseId));
+  await invalidateCourseCache(courseId);
 
   return deletedCourse;
 };

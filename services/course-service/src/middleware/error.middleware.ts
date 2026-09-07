@@ -12,6 +12,7 @@ const STATUS_BY_MESSAGE: Record<string, number> = {
   "Refresh token reuse detected": 401,
   "User not found": 404,
   "Invalid or expired password reset token": 400,
+  Forbidden: 403,
 };
 
 export const errorHandler = (
