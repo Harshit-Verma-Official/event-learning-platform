@@ -56,6 +56,45 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./services/auth-service/Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    env_file:
+      - ./services/auth-service/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/auth_db
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BROKERS: kafka:29092
+    ports:
+      - "3001:3001"
+  
+  course-service:
+    build:
+      context: .
+      dockerfile: ./services/course-service/Dockerfile
+    container_name: course-service
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - auth-service
+    env_file:
+      - ./services/course-service/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/course_db
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BROKERS: kafka:29092
+    ports:
+      - "3002:3002"
+
 volumes:
   postgres_data:
   redis_data:
