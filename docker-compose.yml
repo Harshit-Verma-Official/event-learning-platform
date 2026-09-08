@@ -3,6 +3,11 @@ services:
     image: postgres:17
     container_name: learning-postgres
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,6 +22,11 @@ services:
     image: redis:8
     container_name: learning-redis
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     ports:
       - "6379:6379"
     volumes:
@@ -36,6 +46,15 @@ services:
     image: confluentinc/cp-kafka:7.6.13
     container_name: learning-kafka
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
     depends_on:
       - zookeeper
     ports:
@@ -62,10 +81,19 @@ services:
       dockerfile: ./services/auth-service/Dockerfile
     container_name: auth-service
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     depends_on:
-      - postgres
-      - redis
-      - kafka
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     env_file:
       - ./services/auth-service/.env
     environment:
@@ -74,7 +102,7 @@ services:
       KAFKA_BROKERS: kafka:29092
     ports:
       - "3001:3001"
-  
+
   course-service:
     build:
       context: .
@@ -82,10 +110,14 @@ services:
     container_name: course-service
     restart: unless-stopped
     depends_on:
-      - postgres
-      - redis
-      - kafka
-      - auth-service
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
     env_file:
       - ./services/course-service/.env
     environment:
@@ -102,8 +134,10 @@ services:
     container_name: notification-service
     restart: unless-stopped
     depends_on:
-      - postgres
-      - kafka
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     env_file:
       - ./services/notification-service/.env
     environment:
@@ -119,8 +153,10 @@ services:
     container_name: analytics-service
     restart: unless-stopped
     depends_on:
-      - postgres
-      - kafka
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     env_file:
       - ./services/analytics-service/.env
     environment:
