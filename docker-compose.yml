@@ -95,6 +95,40 @@ services:
     ports:
       - "3002:3002"
 
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./services/notification-service/Dockerfile
+    container_name: notification-service
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
+    env_file:
+      - ./services/notification-service/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/notification_db
+      KAFKA_BROKERS: kafka:29092
+    ports:
+      - "3003:3003"
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: ./services/analytics-service/Dockerfile
+    container_name: analytics-service
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
+    env_file:
+      - ./services/analytics-service/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/analytics_db
+      KAFKA_BROKERS: kafka:29092
+    ports:
+      - "3004:3004"
+
 volumes:
   postgres_data:
   redis_data:
