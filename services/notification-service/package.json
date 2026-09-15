@@ -7,8 +7,10 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -b",
     "db:migrate": "prisma migrate dev && prisma generate",
+    "db:generate": "prisma generate",
     "start": "node dist/server.js",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "test:watch": "vitest"
   },
   "keywords": [],

@@ -4,7 +4,7 @@ import { app } from "../../src/app";
 import { prisma } from "../../src/lib/prisma";
 import { hashPassword } from "../../src/utils/password";
 
-describe("POST /api/v1/auth/login", () => {
+describe("POST /v1/login", () => {
   beforeEach(async () => {
     await prisma.refreshToken.deleteMany();
     await prisma.user.deleteMany();
@@ -21,7 +21,7 @@ describe("POST /api/v1/auth/login", () => {
       },
     });
 
-    const response = await request(app).post("/api/v1/auth/login").send({
+    const response = await request(app).post("/v1/login").send({
       email: "test@example.com",
       password,
     });
@@ -64,7 +64,7 @@ describe("POST /api/v1/auth/login", () => {
       },
     });
 
-    const response = await request(app).post("/api/v1/auth/login").send({
+    const response = await request(app).post("/v1/login").send({
       email: "test@example.com",
       password: "WrongPassword123!",
     });
@@ -73,7 +73,7 @@ describe("POST /api/v1/auth/login", () => {
   });
 
   it("should reject unknown email", async () => {
-    const response = await request(app).post("/api/v1/auth/login").send({
+    const response = await request(app).post("/v1/login").send({
       email: "doesnotexist@example.com",
       password: "Password123!",
     });

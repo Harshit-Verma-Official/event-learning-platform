@@ -15,7 +15,9 @@
     "studio:auth": "npm run db:studio --workspace=auth-service",
     "studio:course": "npm run db:studio --workspace=course-service",
     "lint": "eslint .",
-    "build:packages": "npm run build --workspace=@event-learning-platform/common --workspace=@event-learning-platform/contracts",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspaces --if-present",
     "build": "npm run build --workspaces --if-present"
   },
   "keywords": [],

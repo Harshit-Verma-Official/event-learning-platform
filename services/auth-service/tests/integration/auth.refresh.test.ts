@@ -6,7 +6,7 @@ import { prisma } from "../../src/lib/prisma";
 import { hashPassword } from "../../src/utils/password";
 import { hashToken } from "../../src/utils/token";
 
-describe("POST /api/v1/auth/refresh", () => {
+describe("POST /v1/refresh", () => {
   beforeEach(async () => {
     await prisma.refreshToken.deleteMany();
     await prisma.user.deleteMany();
@@ -36,7 +36,7 @@ describe("POST /api/v1/auth/refresh", () => {
     });
 
     const response = await request(app)
-      .post("/api/v1/auth/refresh")
+      .post("/v1/refresh")
       .set("Cookie", `refreshToken=${refreshToken}`);
 
     expect(response.status).toBe(200);
@@ -84,14 +84,14 @@ describe("POST /api/v1/auth/refresh", () => {
 
     // First refresh succeeds and rotates the token.
     const firstResponse = await request(app)
-      .post("/api/v1/auth/refresh")
+      .post("/v1/refresh")
       .set("Cookie", `refreshToken=${refreshToken}`);
 
     expect(firstResponse.status).toBe(200);
 
     // Try using the OLD token again.
     const secondResponse = await request(app)
-      .post("/api/v1/auth/refresh")
+      .post("/v1/refresh")
       .set("Cookie", `refreshToken=${refreshToken}`);
 
     expect(secondResponse.status).toBe(401);

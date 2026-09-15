@@ -16,7 +16,7 @@ describe("Auth integration tests", () => {
   });
 
   it("should register a user and create an outbox event", async () => {
-    const response = await request(app).post("/api/v1/auth/register").send({
+    const response = await request(app).post("/v1/register").send({
       name: "Test User",
       email: "test@example.com",
       password: "Password123!",

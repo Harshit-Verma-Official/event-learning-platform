@@ -9,7 +9,9 @@
     "start": "node dist/server.js",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev && prisma generate",
+    "db:generate": "prisma generate",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "test:watch": "vitest"
   },
   "keywords": [],

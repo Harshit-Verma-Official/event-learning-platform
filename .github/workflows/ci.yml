@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start infrastructure
+        run: docker compose up -d postgres redis zookeeper kafka
+
+      - name: Wait for infrastructure
+        run: sleep 15
+
+      - name: Create test databases
+        run: |
+          docker compose exec -T postgres \
+            psql -U postgres -c "CREATE DATABASE auth_test_db;" || true
+
+          docker compose exec -T postgres \
+            psql -U postgres -c "CREATE DATABASE course_test_db;" || true
+
+      - name: Generate Prisma clients
+        run: npm run db:generate
+
+      - name: Run Auth database migrations
+        working-directory: services/auth-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/auth_test_db
+        run: npx prisma migrate deploy --config=prisma.config.ts
+
+      - name: Run Course database migrations
+        working-directory: services/course-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/course_test_db
+        run: npx prisma migrate deploy --config=prisma.config.ts
+
+      - name: Run Notification database migrations
+        working-directory: services/notification-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/notification_test_db
+        run: npx prisma migrate deploy --config=prisma.config.ts
+
+      - name: Build shared packages
+        run: |
+          npm run build --workspace=@event-learning-platform/common
+          npm run build --workspace=@event-learning-platform/contracts
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Stop infrastructure
+        if: always()
+        run: docker compose down -v
