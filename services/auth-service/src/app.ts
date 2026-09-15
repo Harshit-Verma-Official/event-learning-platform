@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(pinoHttp({ logger }));
 
-app.use("/api/v1/auth", authRoutes);
+app.use("/v1", authRoutes);
 
 app.use(errorHandler);
 
