@@ -14,7 +14,7 @@
     "dev:analytics": "npm run dev --workspace=analytics-service",
     "studio:auth": "npm run db:studio --workspace=auth-service",
     "studio:course": "npm run db:studio --workspace=course-service",
-    "lint": "eslint .",
+    "lint": "eslint services packages",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "db:generate": "npm run db:generate --workspaces --if-present",
