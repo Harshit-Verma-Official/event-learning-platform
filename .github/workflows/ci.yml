@@ -43,6 +43,8 @@ jobs:
             psql -U postgres -c "CREATE DATABASE course_test_db;" || true
 
       - name: Generate Prisma clients
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/auth_test_db
         run: npm run db:generate
 
       - name: Run Auth database migrations
