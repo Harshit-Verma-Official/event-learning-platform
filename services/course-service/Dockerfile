@@ -49,4 +49,4 @@ WORKDIR /app/services/course-service
 
 EXPOSE 3002
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["node", "dist/server.js"]

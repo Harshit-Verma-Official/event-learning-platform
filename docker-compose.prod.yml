@@ -77,11 +77,56 @@ services:
       timeout: 10s
       retries: 10
 
-  auth-service:
-    build:
-      context: .
-      dockerfile: ./services/auth-service/Dockerfile
+  auth-migration:
+    image: ${AUTH_IMAGE}:${IMAGE_TAG}
 
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/auth_db
+
+    command: npx prisma migrate deploy
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  course-migration:
+    image: ${COURSE_IMAGE}:${IMAGE_TAG}
+
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/course_db
+
+    command: npx prisma migrate deploy
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notification-migration:
+    image: ${NOTIFICATION_IMAGE}:${IMAGE_TAG}
+
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/notification_db
+
+    command: npx prisma migrate deploy
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  analytics-migration:
+    image: ${ANALYTICS_IMAGE}:${IMAGE_TAG}
+
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/analytics_db
+
+    command: npx prisma migrate deploy
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  auth-service:
+    image: ${AUTH_IMAGE}:${IMAGE_TAG}
     container_name: auth-service
     restart: unless-stopped
 
@@ -117,10 +162,7 @@ services:
       - "127.0.0.1:3001:3001"
 
   course-service:
-    build:
-      context: .
-      dockerfile: ./services/course-service/Dockerfile
-
+    image: ${COURSE_IMAGE}:${IMAGE_TAG}
     container_name: course-service
     restart: unless-stopped
 
@@ -147,10 +189,7 @@ services:
       - "127.0.0.1:3002:3002"
 
   notification-service:
-    build:
-      context: .
-      dockerfile: ./services/notification-service/Dockerfile
-
+    image: ${NOTIFICATION_IMAGE}:${IMAGE_TAG}
     container_name: notification-service
     restart: unless-stopped
 
@@ -172,10 +211,7 @@ services:
       - "127.0.0.1:3003:3003"
 
   analytics-service:
-    build:
-      context: .
-      dockerfile: ./services/analytics-service/Dockerfile
-
+    image: ${ANALYTICS_IMAGE}:${IMAGE_TAG}
     container_name: analytics-service
     restart: unless-stopped
 

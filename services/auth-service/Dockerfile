@@ -51,4 +51,4 @@ WORKDIR /app/services/auth-service
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["node", "dist/server.js"]

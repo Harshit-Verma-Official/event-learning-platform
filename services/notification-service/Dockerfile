@@ -50,4 +50,4 @@ WORKDIR /app/services/notification-service
 
 EXPOSE 3003
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["node", "dist/server.js"]

@@ -1,0 +1,84 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image tag
+        id: vars
+        run: echo "tag=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Auth image
+        run: |
+          docker build \
+            -f services/auth-service/Dockerfile \
+            -t ghcr.io/${{ github.repository_owner }}/event-learning-platform-auth:${{ steps.vars.outputs.tag }} \
+            .
+
+      - name: Build Course image
+        run: |
+          docker build \
+            -f services/course-service/Dockerfile \
+            -t ghcr.io/${{ github.repository_owner }}/event-learning-platform-course:${{ steps.vars.outputs.tag }} \
+            .
+
+      - name: Build Notification image
+        run: |
+          docker build \
+            -f services/notification-service/Dockerfile \
+            -t ghcr.io/${{ github.repository_owner }}/event-learning-platform-notification:${{ steps.vars.outputs.tag }} \
+            .
+
+      - name: Build Analytics image
+        run: |
+          docker build \
+            -f services/analytics-service/Dockerfile \
+            -t ghcr.io/${{ github.repository_owner }}/event-learning-platform-analytics:${{ steps.vars.outputs.tag }} \
+            .
+
+      - name: Push Auth image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/event-learning-platform-auth:${{ steps.vars.outputs.tag }}
+
+      - name: Push Course image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/event-learning-platform-course:${{ steps.vars.outputs.tag }}
+
+      - name: Push Notification image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/event-learning-platform-notification:${{ steps.vars.outputs.tag }}
+
+      - name: Push Analytics image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/event-learning-platform-analytics:${{ steps.vars.outputs.tag }}
