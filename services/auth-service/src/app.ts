@@ -19,6 +19,6 @@ app.use(errorHandler);
 app.get("/health", async (_req, res) => {
   res.json({
     service: "auth-service",
-    status: "ok",
+    status: "OK",
   });
 });
