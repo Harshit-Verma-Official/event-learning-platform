@@ -21,7 +21,7 @@ COPY services/notification-service services/notification-service
 # Generate Prisma client
 WORKDIR /app/services/notification-service
 
-RUN npx prisma generate
+RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dummy_db" npx prisma generate
 
 # Build TypeScript
 RUN npm run build

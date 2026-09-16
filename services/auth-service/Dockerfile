@@ -21,7 +21,7 @@ COPY services/auth-service services/auth-service
 # Generate Prisma client
 WORKDIR /app/services/auth-service
 
-RUN npx prisma generate
+RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dummy_db" npx prisma generate
 
 # Build TypeScript
 RUN npm run build

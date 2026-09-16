@@ -20,7 +20,7 @@ COPY services/analytics-service services/analytics-service
 
 # Generate Prisma client
 WORKDIR /app/services/analytics-service
-RUN npx prisma generate
+RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dummy_db" npx prisma generate
 
 # Build TypeScript
 RUN npm run build
